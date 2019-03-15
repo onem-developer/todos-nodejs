@@ -1,0 +1,12 @@
+{
+    type: "form",
+    header: "#TODO DESCRIPTION",
+    nextRoute: "/todoAddDesc",
+    method: "POST",
+    body: {
+        "type": "input",
+        "description": "Provide a description for the task",
+        "name": "description",
+        "type": "string"
+    }
+}
