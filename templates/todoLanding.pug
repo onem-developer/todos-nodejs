@@ -6,8 +6,9 @@ p
 a(href='/todo/form/desc/')
   option
     | New todo
-option
-  | Done(#{doneCount})
+a(href='/todo/listDone/')
+  option
+    | Done(#{doneCount})
 p
   | Todo (#{todoCount}):
 each todo in todos

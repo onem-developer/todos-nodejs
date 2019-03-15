@@ -1,0 +1,12 @@
+{
+    type: "form",
+    header: "#TODO DUE DATE",
+    nextRoute: "/todoSetDuedate",
+    method: "PUT",
+    body: {
+        "type": "input",
+        "description": "Provide a due date",
+        "name": "due date",
+        "type": "string"
+    }
+}

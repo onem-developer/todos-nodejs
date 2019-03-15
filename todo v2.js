@@ -63,7 +63,7 @@ api.get('/todo/view/:id', getUser, function (req, res) {
 
 api.get('/todo/form/desc', getUser, function (req, res) {
     var fields = [
-        { name: 'taskDescription', type: 'string' }
+        { name: 'taskDescription', name:'description', type: 'string' }
     ];
     // third parameter is any optional data to be provided to the template
     var desc = new todo.renderForm('/templates/todoDescriptionForm', fields, {});
@@ -88,7 +88,7 @@ api.post('/todoAddDesc', getUser, function (req, res) {
     //todo.dueDate = req.body.dueDate;
     todo.save(function (err, todo) {
         var fields = [
-            { name: 'dueDate', type: 'string' }
+            { name: 'dueDate', name: 'description', type: 'string' }
         ];
         // third parameter is any optional data to be provided to the template
         var dueDate = new todo.renderForm('/templates/todoDuedateForm', fields, todo);
