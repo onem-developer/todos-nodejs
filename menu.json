@@ -1,0 +1,26 @@
+[
+    {
+        "type": "content",
+        "template": "Task: {{this.task}}"
+    },
+    {
+        "type": "content",
+        "template": "Due: {{this.dueDate}}"
+    },
+    {
+        "type": "option",
+        "template": "Mark as done",
+        "action": "/todo/{id}",
+        "actionMethod": "PUT",
+        "body": "{status: ‘done’}",
+        "nextRoute": "call / landing({preBody: 'Marked as Done'})"
+    },
+    {
+        "type": "option",
+        "template": "Delete",
+        "action": "/todo/{id}",
+        "actionMethod": "DELETE",
+        "body": "{}",
+        "nextRoute": "call / landing({preBody: 'Task was deleted'})"
+    }
+]
