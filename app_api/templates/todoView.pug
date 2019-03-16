@@ -1,18 +1,13 @@
-- var todo = {id: "1", taskDescription: 'Something todo', dueDate: "12/3", status: "todo"}
 p
-  | Task: #{todo.taskDescription}
-  | Due: #{todo.dueDate}
-if todo.status !== 'done'
-  a(href='/todoDone/'+todo.id, method='put')
-    option
-      | Mark as done
-if todo.status == 'done'
-  a(href='/todoTodo/'+todo.id, method='put')
-    option
-      | Mark as todo
-a(href='/todo/'+todo.id, method='delete')
-  option
-    | Delete
-a(href='/todoEdit/'+todo.id)
-  option
-    | Edit
+  | Task: #{taskDescription}
+  | Due: #{dueDate}
+if status !== 'done'
+  option(href='/todoDone/'+id, method='put')
+    | Mark as done
+if status == 'done'
+  option(href='/todoTodo/'+id, method='put')
+    | Mark as todo
+option(href='/todo/'+id, method='delete')
+  | Delete
+option(href='/todoEdit/'+id)
+  | Edit

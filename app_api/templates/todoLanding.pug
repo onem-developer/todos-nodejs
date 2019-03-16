@@ -1,18 +1,12 @@
-- var doneCount = "0"
-- var todoCount = 0
-- var todos = [{id: "1", taskDescription: "Blah", dueDate:"12/3"}, {id: "2", taskDescription: "Blob", dueDate:"15/3"}]
 p
   | #TODO MENU
-a(href='/todo/form/desc/')
-  option
-    | New todo
-a(href='/todo/listDone/')
-  option
-    | Done(#{doneCount})
+option(href='/todo/form/desc/')
+  | New todo
+option(href='/todo/listDone/')
+  | Done(#{doneCount})
 p
   | Todo (#{todoCount}):
 each todo in todos
-    p
-        a(href='/todo/view/'+todo.id)
-          option #{todo.taskDescription} #{todo.dueDate}
+   p
+   option(href='/todo/view/'+todo.id) #{todo.taskDescription} #{todo.dueDate}
           
