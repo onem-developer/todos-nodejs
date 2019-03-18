@@ -1,8 +1,11 @@
 {
   "name": "onem-api",
   "version": "1.0.0",
-  "description": "ONEm API",
+  "description": "ONEm Todos",
   "main": "index.js",
+  "engines": {
+    "node": "10.15.3"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
