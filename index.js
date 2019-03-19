@@ -84,6 +84,10 @@ api.put('/todoSetDuedate/:id', getUser, function (req, res) {
 });
 
 api.post('/todoAddDesc', getUser, function (req, res) {
+
+    debug('body');
+    debug(req.body);
+
     var todo = new Todo();
     todo.taskDescription = req.body.taskDescription;
     //todo.dueDate = req.body.dueDate;

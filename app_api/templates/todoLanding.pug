@@ -1,12 +1,11 @@
-header
-  | #TODO MENU
 option(href='/todo/form/desc/')
   | New todo
-option(href='/todo/listDone/')
-  | Done(#{doneCount})
-p
-  | Todo (#{todoCount}):
-each todo in todos
-   p
-   option(href='/todo/view/'+todo.id) #{todo.taskDescription} #{todo.dueDate}
+if todos && todos.length > 0
+  option(href='/todo/listDone/')
+    | Done(#{doneCount})
+  p
+    | Todo (#{todoCount}):
+if todos
+  each todo in todos
+    option(href='/todo/view/'+todo.id) #{todo.taskDescription} #{todo.dueDate}
           

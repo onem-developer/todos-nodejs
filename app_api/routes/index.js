@@ -19,7 +19,7 @@ const todoVerbs = [
 var todo = new Service(APIKEY, "TODO", todoVerbs);
 
 var initialLandingMenuData = {
-    doneCount: 1,
+    doneCount: 0,
     todoCount: 0,
     todos: [{ id: "1", taskDescription: "Blah", dueDate: "12/3" }, { id: "2", taskDescription: "Blob", dueDate: "15/3" }]
 }
@@ -56,18 +56,36 @@ function getUser(req, res, next) {
     next();
 }
 
+var landingMenuData = async function() {
+    return new Promise((resolve, reject) => {
+        var result = {
+            doneCount: 0,
+            todoCount: 0,
+            todos: [],
+        };
+        Todo.count({status: 'done'}).then(function(count) {
+            result.doneCount = count;
+            return Todo.count({status: 'todo'});
+        }).then(function(count) {
+            result.todoCount = count;
+            return Todo.find({status: 'todo'});
+        }).then(function(todos) {
+            result.todos = todos;
+            debug("result:");
+            debug(result);
+            resolve(result);
+        }).catch(function(error) {
+            reject(error);
+        });
+    });
+}
+
 /*
  * Routes
  */
-
 // Landing menu
-api.get('/todo', getUser, function (req, res) {
-    landingMenu.data.doneCount++,
-    res.json({ data: landingMenu.render() });
-});
-
-api.get('/todo2', getUser, function (req, res) {
-    landingMenu.data.doneCount--,
+api.get('/todo', getUser, async function (req, res) {
+    landingMenu.data = await landingMenuData();
     res.json({ data: landingMenu.render() });
 });
 
@@ -85,20 +103,20 @@ api.get('/todo/form/desc', getUser, function (req, res) {
 });
 
 api.put('/todoSetDuedate/:id', getUser, function (req, res) {
-    todo.find({ _id: ObjectId(req.params.id) }).then(function (todo) {
-        todo.dueDate = req.body.dueDate;
-        return todo.save;
-    }).then(function(todo) {
-        //landingMenu.preBody("New task added");
+    Todo.findOneAndUpdate({ _id: ObjectId(req.params.id) },
+        { $set: { dueDate: req.body.dueDate } },
+        { new: true }).then(function(todo) {
+        landingMenu.data = await landingMenuData();
         res.json({ data: landingMenu.render() });
     });
 });
 
 api.post('/todoAddDesc', getUser, function (req, res) {
     var todo = new Todo();
-    todo.taskDescription = req.body.taskDescription;
-    //todo.dueDate = req.body.dueDate;
+    todo.taskDescription = req.body.description;
+    todo.status = 'todo';
     todo.save(function (err, todo) {
+        dateForm.data.todo = todo;
         res.json({ data: dateForm.render() });
     });
 });
