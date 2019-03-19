@@ -30,6 +30,9 @@ landingMenu.header("TODO MENU");
 var viewMenu = todo.addMenu('./app_api/templates/todoView.pug');
 viewMenu.header("TODO VIEW");
 
+var doneMenu = todo.addMenu('./app_api/templates/todoDone.pug');
+doneMenu.header("TODO DONE");
+
 var descForm = todo.addForm('./app_api/templates/todoDescriptionForm.pug');
 descForm.header("TODO DESCRIPTION");
 
@@ -91,12 +94,24 @@ api.get('/todo', getUser, async function (req, res) {
 
 // Todo view menu
 api.get('/todo/view/:id', getUser, function (req, res) {
-    Todo.find({ id: req.params.id }).then(function (todo) {
+    Todo.findOne({ _id: ObjectId(req.params.id) }).then(function (todo) {
        // viewMenu.data = todo;
-        viewMenu.data = {id: "1", taskDescription: 'Something todo', dueDate: "12/3", status: "todo"}
+        viewMenu.data = todo;
         res.json({ data: viewMenu.render() });
     });
 })
+
+api.get('/todoListdone', getUser, function (req, res) {
+    Todo.find({status: 'done'}).then(async function(todos) {
+        if (todos.length > 0) {
+            doneMenu.data.todos = todos;
+            res.json({ data: doneMenu.render() });            
+        } else {
+            landingMenu.data = await landingMenuData();
+            res.json({ data: landingMenu.render() });         
+        }
+    });
+});
 
 api.get('/todo/form/desc', getUser, function (req, res) {
     res.json({ data: descForm.render() });
@@ -105,7 +120,32 @@ api.get('/todo/form/desc', getUser, function (req, res) {
 api.put('/todoSetDuedate/:id', getUser, function (req, res) {
     Todo.findOneAndUpdate({ _id: ObjectId(req.params.id) },
         { $set: { dueDate: req.body.dueDate } },
-        { new: true }).then(function(todo) {
+        { new: true }).then(async function(todo) {
+        landingMenu.data = await landingMenuData();
+        res.json({ data: landingMenu.render() });
+    });
+});
+
+api.put('/todoDone/:id', getUser, function (req, res) {
+    Todo.findOneAndUpdate({ _id: ObjectId(req.params.id) },
+        { $set: { status: 'done' } },
+        { new: true }).then(async function(todo) {
+        landingMenu.data = await landingMenuData();
+        res.json({ data: landingMenu.render() });
+    });
+});
+
+api.put('/todoTodo/:id', getUser, function (req, res) {
+    Todo.findOneAndUpdate({ _id: ObjectId(req.params.id) },
+        { $set: { status: 'todo' } },
+        { new: true }).then(async function(todo) {
+        landingMenu.data = await landingMenuData();
+        res.json({ data: landingMenu.render() });
+    });
+});
+
+api.delete('/todo/:id', getUser, function (req, res) {
+    Todo.remove({ _id: ObjectId(req.params.id) }).then(async function(todo) {
         landingMenu.data = await landingMenuData();
         res.json({ data: landingMenu.render() });
     });
@@ -121,21 +161,4 @@ api.post('/todoAddDesc', getUser, function (req, res) {
     });
 });
 
-// onem.getUser({onemName: 'chris.h.poc'}, function(user) {
-
-
-// };
-
-// onem.getUser({msisdn: '447725419721'}, function(user) {
-
-
-// };
-
-// onem.notify(to, text);
-
-// onem.sendMsg(from, to, text);
-
-// onem.serviceInfo({name: 'market', function: 'getListing', params: [id: '1234']});
-
-// onem.location({});
 module.exports = api;
