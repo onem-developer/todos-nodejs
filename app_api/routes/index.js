@@ -27,7 +27,7 @@ doneMenu.header("TODO DONE");
 var descForm = todo.addForm('./app_api/templates/todoDescriptionForm.pug');
 descForm.header("TODO DESCRIPTION");
 
-var dateForm = todo.addForm('./app_api/templates/todoDueDateForm.pug');
+var dateForm = todo.addForm('./app_api/templates/todoDuedateForm.pug');
 dateForm.header("TODO DUE DATE");
 
 /*
