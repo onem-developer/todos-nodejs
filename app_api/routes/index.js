@@ -59,6 +59,10 @@ function getUser(req, res, next) {
     next();
 }
 
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 var landingMenuData = async function() {
     return new Promise((resolve, reject) => {
         var result = {
@@ -105,9 +109,10 @@ api.get('/todoListdone', getUser, function (req, res) {
     Todo.find({status: 'done'}).then(async function(todos) {
         if (todos.length > 0) {
             doneMenu.data.todos = todos;
-            res.json({ data: doneMenu.render() });            
+            res.json({ data: doneMenu.render() });
         } else {
             landingMenu.data = await landingMenuData();
+            landingMenu.data.preBody = "No tasks in done status";
             res.json({ data: landingMenu.render() });         
         }
     });
@@ -153,7 +158,7 @@ api.delete('/todo/:id', getUser, function (req, res) {
 
 api.post('/todoAddDesc', getUser, function (req, res) {
     var todo = new Todo();
-    todo.taskDescription = req.body.description;
+    todo.taskDescription = capitalize(req.body.description);
     todo.status = 'todo';
     todo.save(function (err, todo) {
         dateForm.data.todo = todo;
