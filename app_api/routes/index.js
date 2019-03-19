@@ -137,7 +137,7 @@ api.put('/todoTodo/:id', getUser, function (req, res) {
 });
 
 api.delete('/todo/:id', getUser, function (req, res) {
-    Todo.remove({ _id: ObjectId(req.params.id) }).then(async function(todo) {
+    Todo.deleteOne({ _id: ObjectId(req.params.id) }).then(async function(todo) {
         landingMenu.data = await landingMenuData(req.user);
         res.json({ data: landingMenu.render() });
     });
