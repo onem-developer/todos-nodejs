@@ -38,14 +38,9 @@ function getUser(req, res, next) {
         debug("missing header");
         return res.status(401).send({ message: 'Unauthorized request' });
     }
-    debug("req.header");
-    debug(req.header('Authorization'));
-
     var token = req.header('Authorization').split(' ')[1];
-
     var payload = jwt.decode(token, process.env.TOKEN_SECRET);
-    debug("decoded payload");
-    debug(payload);
+
     if (!payload) {
         return res.status(401).send({ message: 'Unauthorized Request' });
     }
@@ -72,8 +67,6 @@ var landingMenuData = async function(user) {
             return Todo.find({ user: user, status: 'todo' });
         }).then(function(todos) {
             result.todos = todos;
-            debug("result:");
-            debug(result);
             resolve(result);
         }).catch(function(error) {
             reject(error);
@@ -86,7 +79,6 @@ var landingMenuData = async function(user) {
  */
 // Landing menu
 api.get('/todo', getUser, async function (req, res) {
-    debug("user:" + req.user);
     landingMenu.data = await landingMenuData(req.user);
     res.json({ data: landingMenu.render() });
 });

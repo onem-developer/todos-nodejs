@@ -1,121 +1,69 @@
+require('dotenv').config();
 
-const mongoose = require('mongoose');
-const Service = require('onem-npm').Service;
-const TodoSchema = require('./models').TodoSchema;
+var debug = require('debug')('todos');
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var logger = require('morgan');
+var path = require('path');
+var methodOverride = require('method-override');
+var bodyParser = require('body-parser');
+var errorHandler = require('errorhandler');
 
-const APIKEY = 'o4857349ytvo5438543987498u34q9843';
 
-var Todo = mongoose.model('todos', TodoSchema);
+// Bring in the routes for the API (delete the default routes)
+var routesApi = require('./app_api/routes/index.js');
 
-var todoVerbs = [
-    { name: 'menu', route: '/todo' }
-];
-var todo = new Service(APIKEY, "TODO", todoVerbs);
+// The http server will listen to an appropriate port, or default to
+// port 5000.
 
-var renderLandingMenu = function(user) {
-    var landingMenuData = {
-        doneCount: 0,
-        todoCount: 0,
-        todos: [{ id: "1", taskDescription: "Blah", dueDate: "12/3" }, { id: "2", taskDescription: "Blob", dueDate: "15/3" }]
-    }
-    var landingMenu = new todo.renderMenu('/templates/todoLanding', landingMenuData);
-    landingMenu.header("TODO MENU");
-    return landingMenu;
+var theport = process.env.PORT || 5000;
+var mode = app.get('env');
+mode = mode.toLowerCase();
+var public_folder = mode == 'production' ? 'public' : 'app_client';
+
+debug("public_folder:" + public_folder);
+
+if (mode === 'development') app.use(logger('dev'));
+app.use(methodOverride());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(express.static(path.join(__dirname, public_folder)));
+
+// Force HTTPS on Heroku
+// if (app.get('env') === 'production') {
+if (process.env.HTTPS === 'ON') {
+    app.use(function(req, res, next) {
+        var protocol = req.get('x-forwarded-proto');
+        protocol == 'https' ? next() : res.redirect('https://' + req.hostname + req.url);
+    });
 }
 
-/*
- * Middleware to grab user
- */
-function getUser(req, res, next) {
-    if (!req.header('Authorization')) {
-        debug("missing header");
-        return res.status(401).send({ message: 'Unauthorized request' });
-    }
-    var token = req.header('Authorization').split(' ')[1];
+// Bring in the data model & connect to db
+require('./app_api/models/db');
 
-    var payload = common.decodeJWT(token);
-    debug("decoded payload");
-    debug(payload);
-    if (!payload) {
-        return res.status(401).send({ message: 'Unauthorized Request' });
-    }
-    req.user = payload.sub;
-    next();
+// Use the API routes when path starts with /api
+app.use('/api', routesApi);
+
+app.get('/', function(req, res, next) {
+    res.sendFile('/' + public_folder + '/index.html', { root: __dirname });
+});
+
+app.get('*', function(req, res) {
+    res.sendFile('/' + public_folder + '/index.html', { root: __dirname });
+});
+
+app.get('/*', function(req, res, next) {
+    // Just send the index.html for other files to support HTML5Mode
+    res.sendFile('/' + public_folder + '/index.html', { root: __dirname });
+});
+
+// error handling middleware should be loaded after the loading the routes
+if ('development' == app.get('env')) {
+    app.use(errorHandler());
 }
+server.listen(theport);
+debug("listening on port:" + theport)
 
-/*
- * Routes
- */
-
-// Landing menu
-api.get('/todo', getUser, function (req, res) {
-    var landingMenu = renderLandingMenu(req.user);
-    res.json({ data: landingMenu.json });
-});
-
-// Todo view menu
-api.get('/todo/view/:id', getUser, function (req, res) {
-    todo.find({ _id: req.params.id }).then(function (todo) {
-        var viewMenu = new todo.renderMenu('/templates/todoView', todo);
-        viewMenu.header("TODO VIEW");
-        res.json({ data: viewMenu.json });
-    });
-})
-
-api.get('/todo/form/desc', getUser, function (req, res) {
-    var fields = [
-        { name: 'taskDescription', name:'description', type: 'string' }
-    ];
-    // third parameter is any optional data to be provided to the template
-    var desc = new todo.renderForm('/templates/todoDescriptionForm', fields, {});
-    desc.header("TODO TASK DESCRIPTION");
-    res.json({ data: desc.json });
-});
-
-api.put('/todoSetDuedate/:id', getUser, function (req, res) {
-    todo.find({ _id: req.params.id }).then(function (todo) {
-        todo.dueDate = req.body.dueDate;
-        return todo.save;
-    }).then(function(todo) {
-        var landingMenu = renderLandingMenu(req.user);
-        landingMenu.preBody("New task added");
-        res.json({ data: landingMenu.json });
-    });
-});
-
-api.post('/todoAddDesc', getUser, function (req, res) {
-
-    debug('body');
-    debug(req.body);
-
-    var todo = new Todo();
-    todo.taskDescription = req.body.taskDescription;
-    //todo.dueDate = req.body.dueDate;
-    todo.save(function (err, todo) {
-        var fields = [
-            { name: 'dueDate', name: 'description', type: 'string' }
-        ];
-        // third parameter is any optional data to be provided to the template
-        var dueDate = new todo.renderForm('/templates/todoDuedateForm', fields, todo);
-        dueDate.header("TODO TASK DUE DATE");
-        res.json({ data: dueDate.json });
-    });
-});
-
-// onem.getUser({onemName: 'chris.h.poc'}, function(user) {
-
-
-// };
-
-// onem.getUser({msisdn: '447725419721'}, function(user) {
-
-
-// };
-
-// onem.notify(to, text);
-
-// onem.sendMsg(from, to, text);
-
-// onem.serviceInfo({name: 'market', function: 'getListing', params: [id: '1234']});
-
-// onem.location({});
+module.exports = app;
