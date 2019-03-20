@@ -11,7 +11,8 @@ const Todo = mongoose.model('todos', TodoSchema);
 const jwt = require('jwt-simple');
 
 const todoVerbs = [
-    { name: 'menu', route: '/todo' }
+    { name: 'menu', route: '/todo', footer: true },
+    { name: 'add', route: '/todo/form/desc', footer: false }
 ];
 var todo = new Service(APIKEY, "TODO", todoVerbs);
 
