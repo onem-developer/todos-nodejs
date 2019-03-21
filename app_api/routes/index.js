@@ -14,7 +14,7 @@ const todoVerbs = [
     { name: 'menu', route: '/todo', footer: true },
     { name: 'add', route: '/todo/form/desc', footer: false }
 ];
-var todo = new Service(APIKEY, "TODO", todoVerbs);
+var todo = new Service(APIKEY, "TODO", process.env.CALLBACK_PATH, todoVerbs);
 
 var landingMenu = todo.addMenu('./app_api/templates/todoLanding.pug');
 landingMenu.header("TODO MENU");
