@@ -1,4 +1,4 @@
-require('dotenv').config();
+//require('dotenv').config();
 
 var debug = require('debug')('todos');
 var express = require('express');
@@ -10,14 +10,16 @@ var methodOverride = require('method-override');
 var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 
+// Bring in the data model & connect to db
 
+require('./app_api/models/db');
 // Bring in the routes for the API (delete the default routes)
 var routesApi = require('./app_api/routes/index.js');
 
 // The http server will listen to an appropriate port, or default to
 // port 5000.
 
-var theport = process.env.PORT || 5000;
+var theport = process.env.PORT || 8080;
 var mode = app.get('env');
 mode = mode.toLowerCase();
 var public_folder = mode == 'production' ? 'public' : 'app_client';
@@ -40,8 +42,7 @@ if (process.env.HTTPS === 'ON') {
     });
 }
 
-// Bring in the data model & connect to db
-require('./app_api/models/db');
+
 
 // Use the API routes when path starts with /api
 app.use('/api', routesApi);

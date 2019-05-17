@@ -4,15 +4,10 @@ npm-debug.log
 sessions/
 
 # Local development
+environment
 *.env
 *.dev
 .DS_Store
 restartlog.txt
-npm-debug.log.3419865986
 
-# Docker
-Dockerfile
-docker-compose.yml
-node_modules
-node_modules
 

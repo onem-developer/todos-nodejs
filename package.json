@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index"
+    "start": "node index",
+    "start:dev": "nodemon index"
   },
   "repository": {
     "type": "git",
@@ -35,7 +36,9 @@
     "method-override": "^3.0.0",
     "mongoose": "^5.4.19",
     "morgan": "^1.9.1",
-    "onem-nodejs-api": "^1.0.4",
-    "path": "^0.12.7"
+    "onem-nodejs-api": "^1.0.6",
+    "path": "^0.12.7",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
   }
 }
