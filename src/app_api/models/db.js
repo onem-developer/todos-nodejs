@@ -1,13 +1,13 @@
-const debug = require('debug')('todos');
+const logger = require('debug-level').log('todos')
+const mongoose = require('mongoose');
 
-var mongoose = require('mongoose');
 var gracefulShutdown;
 
 // Here we find an appropriate database to connect to, defaulting to
 // localhost if we don't find one.
-var dbURI = process.env.MONGODB_URI ||  'mongodb://127.0.0.1:27017/todos';
+const dbURI = process.env.MONGODB_URI ||  'mongodb://127.0.0.1:27017/todos';
 
-debug("dbURI:"+dbURI);
+logger.info("dbURI:"+dbURI);
 
 mongoose.connect(dbURI, { 
     useNewUrlParser: true,
@@ -15,9 +15,9 @@ mongoose.connect(dbURI, {
     useFindAndModify: false
  }, function (err, res) {
   if (err) { 
-    debug ('ERROR connecting to: ' + dbURI + '. ' + err);
+    logger.error('ERROR connecting to: ' + dbURI + '. ' + err);
   } else {
-    debug ('Succeeded connected to: ' + dbURI);
+    logger.log('Succeeded connected to: ' + dbURI);
   }
 });
 
@@ -25,7 +25,7 @@ mongoose.connect(dbURI, {
 // To be called when process is restarted or terminated
 gracefulShutdown = function(msg, callback) {
     mongoose.connection.close(function() {
-        debug('Mongoose disconnected through ' + msg);
+        logger.info('Mongoose disconnected through ' + msg);
         callback();
     });
 };

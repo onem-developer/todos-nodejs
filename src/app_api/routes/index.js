@@ -1,7 +1,7 @@
 
+const logger = require('debug-level').log('todos')
 const express = require('express')
 const api = express.Router()
-const debug = require('debug')('todos')
 const mongoose = require('mongoose')
 const ObjectId = require('mongoose').Types.ObjectId
 const Service = require('onem-nodejs-api').Service
@@ -36,7 +36,7 @@ dateForm.header("TODO DUE DATE")
  */
 function getUser(req, res, next) {
     if (!req.header('Authorization')) {
-        debug("missing header")
+        logger.error("missing header")
         return res.status(401).send({ message: 'Unauthorized request' })
     }
     const token = req.header('Authorization').split(' ')[1]
@@ -145,8 +145,7 @@ api.delete('/todo/:id', getUser, function (req, res) {
 })
 
 api.post('/todoAddDesc', getUser, function (req, res) {
-    debug("/todoAddDesc")
-    debug(req)
+    logger.info("/todoAddDesc")
     let todo = new Todo()
     todo.user = req.user
     todo.taskDescription = capitalize(req.body.description)
@@ -158,8 +157,7 @@ api.post('/todoAddDesc', getUser, function (req, res) {
 })
 
 api.initialize = async () => {
-    debug("/api.initialize")
-    debug(todo)
+    logger.info("/api.initialize")
     return todo.register()
 }
 
