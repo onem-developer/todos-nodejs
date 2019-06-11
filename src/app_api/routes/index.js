@@ -6,15 +6,10 @@ const mongoose = require('mongoose')
 const ObjectId = require('mongoose').Types.ObjectId
 const Service = require('onem-nodejs-api').Service
 const TodoSchema = require('../models/Model').TodoSchema
-const APIKEY = 'o4857349ytvo5438543987498u34q9843'
 const Todo = mongoose.model('todos', TodoSchema)
 const jwt = require('jwt-simple')
 
-const todoVerbs = [
-    { name: 'menu', route: '/todo', footer: true },
-    { name: 'add', route: '/todo/form/desc', footer: false }
-]
-const todo = new Service(APIKEY, "TODO", process.env.CALLBACK_PATH, todoVerbs)
+const todo = new Service("TODO")
 
 const landingMenu = todo.addMenu('./src/app_api/templates/todoLanding.pug')
 landingMenu.header("TODO MENU")
@@ -155,10 +150,5 @@ api.post('/todoAddDesc', getUser, function (req, res) {
         res.json({ data: dateForm.render() })
     })
 })
-
-api.initialize = async () => {
-    logger.info("/api.initialize")
-    return todo.register()
-}
 
 module.exports = api
