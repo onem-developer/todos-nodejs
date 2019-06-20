@@ -1,4 +1,4 @@
-const logger = require('debug-level').log('todos')
+const logger = require('debug-level')('todos')
 const mongoose = require('mongoose');
 
 var gracefulShutdown;
