@@ -1,6 +1,6 @@
 p
   | #{preBody}
-option(href='/todo/form/desc/')
+option(href='/form/desc/')
   | New todo
 option(href='/todoListdone/')
   | Done(#{doneCount})
@@ -8,5 +8,5 @@ if todos && todos.length > 0
   p
     | Todo (#{todoCount}):
   each todo in todos
-    option(href='/todo/view/'+todo.id) #{todo.taskDescription} #{todo.dueDate}
+    option(href='/view/'+todo.id) #{todo.taskDescription} #{todo.dueDate}
           

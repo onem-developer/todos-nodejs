@@ -24,16 +24,17 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride())
 
-// Use the API routes when path starts with /api
-app.use('/api', api)
+
 
 if (mode === 'development') {
-    app.use(morgan('dev'))
     app.use(errorHandler())
+    app.use(morgan('dev'))
     public_folder = 'app_client'
 } else {
     public_folder = 'public'
 }
+// Use the API routes when path starts with /api
+app.use('/api', api)
 
 logger.info("public_folder:" + public_folder)
 

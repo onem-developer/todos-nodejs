@@ -9,7 +9,7 @@ if status !== 'done'
 if status == 'done'
   option(href='/todoTodo/'+id, method='put')
     | Mark as todo
-option(href='/todo/'+id, method='delete')
+option(href='/'+id, method='delete')
   | Delete
 option(href='/todoEdit/'+id)
   | Edit
