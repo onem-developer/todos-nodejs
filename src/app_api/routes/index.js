@@ -4,7 +4,7 @@ const express = require('express')
 const api = express.Router()
 const mongoose = require('mongoose')
 const ObjectId = require('mongoose').Types.ObjectId
-const Service = require('onem-nodejs-api').Service
+const Service = require('../../../../../onem-nodejs-api').Service
 const TodoSchema = require('../models/Model').TodoSchema
 const Todo = mongoose.model('todos', TodoSchema)
 const jwt = require('jwt-simple')
@@ -12,19 +12,21 @@ const jwt = require('jwt-simple')
 const todo = new Service("TODO")
 
 const landingMenu = todo.addMenu('./src/app_api/templates/todoLanding.pug')
-landingMenu.header("TODO MENU")
+landingMenu.header("MENU")
 
 const viewMenu = todo.addMenu('./src/app_api/templates/todoView.pug')
-viewMenu.header("TODO VIEW")
+viewMenu.header("VIEW")
 
 const doneMenu = todo.addMenu('./src/app_api/templates/todoDone.pug')
-doneMenu.header("TODO DONE")
+doneMenu.header("DONE")
+
+const todoForm = todo.addForm('./src/app_api/templates/todoForm.pug')
 
 const descForm = todo.addForm('./src/app_api/templates/todoDescriptionForm.pug')
-descForm.header("TODO DESCRIPTION")
+descForm.header("DESCRIPTION")
 
 const dateForm = todo.addForm('./src/app_api/templates/todoDuedateForm.pug')
-dateForm.header("TODO DUE DATE")
+dateForm.header("DUE DATE")
 
 /*
  * Middleware to grab user
@@ -109,6 +111,11 @@ api.get('/todoListdone', getUser, function (req, res) {
     })
 })
 
+api.get('/form/new', getUser, function (req, res) {
+    logger.info(todoForm.render())
+    res.json(todoForm.render())
+})
+
 api.get('/form/desc', getUser, function (req, res) {
     logger.info(descForm.render())
 
@@ -152,7 +159,20 @@ api.delete('/:id', getUser, function (req, res) {
     Todo.deleteOne({ _id: ObjectId(req.params.id) }).then(async function(todo) {
         landingMenu.data = await landingMenuData(req.user)
         logger.info(landingMenu.render())
+        res.json(landingMenu.render())
+    })
+})
 
+api.post('/todoAdd', getUser, function (req, res) {
+    logger.info("/todoAdd")
+    let todo = new Todo()
+    todo.user = req.user
+    todo.taskDescription = capitalize(req.body.description)
+    todo.dueDate = req.body.dueDate
+    todo.status = 'todo'
+    todo.save(function (err, todo) {
+        dateForm.data.todo = todo
+        logger.info(landingMenu.render())
         res.json(landingMenu.render())
     })
 })
