@@ -1,4 +1,7 @@
-if todos && todos.length > 0
-  each todo in todos
-    option(href='/view/'+todo.id) #{todo.taskDescription} #{todo.dueDate}
-          
+section
+  header DONE
+  if todos && todos.length > 0
+    ul
+      each todo in todos
+        li
+          a(href='/view/'+todo.id) #{todo.taskDescription} #{todo.dueDate}

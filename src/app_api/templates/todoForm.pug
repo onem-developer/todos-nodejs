@@ -1,9 +1,11 @@
-form(submit="/todoAdd", confirmation-needed="True", method="post")
-    header description
-    footer Reply with description
-    p Provide a description for the task
-        input(name="description", type="string")
-    header due date
-    footer Reply with due date
-    p Provide a due date
-        input(name="dueDate", type="date")
+form(action="/todoAdd", confirmation-needed="True", method="post")
+    section(name="description")
+        header DESCRIPTION
+        p Provide a description for the task
+        input(type="text")
+        footer Reply with description or BACK
+    section(name="dueDate")
+        header DUE DATE
+        p Provide a due date
+        input(type="date")
+        footer Reply with due date

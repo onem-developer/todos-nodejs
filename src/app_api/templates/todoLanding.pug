@@ -1,12 +1,14 @@
-p
-  | #{preBody}
-option(href='/form/new/')
-  | New todo
-option(href='/todoListdone/')
-  | Done(#{doneCount})
-if todos && todos.length > 0
-  p
-    | Todo (#{todoCount}):
-  each todo in todos
-    option(href='/view/'+todo.id) #{todo.taskDescription} #{todo.dueDate}
-          
+section(auto-select=true)
+  header MENU
+  if prebody
+    p prebody
+  ul
+    li
+        a(href='/form/new/') New Todo
+    li
+        a(href='/todoListdone/') Done(#{doneCount})
+    li Todo (#{todoCount}):
+    each todo in todos
+      li
+        a(href='/view/'+todo.id) #{todo.taskDescription} #{todo.dueDate}
+

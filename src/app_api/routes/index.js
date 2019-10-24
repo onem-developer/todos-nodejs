@@ -4,29 +4,24 @@ const express = require('express')
 const api = express.Router()
 const mongoose = require('mongoose')
 const ObjectId = require('mongoose').Types.ObjectId
-const Service = require('onem-nodejs-api').Service
+
+const { loadTemplate } = require('onemsdk').parser
+const { Response } = require('onemsdk')
+
 const TodoSchema = require('../models/Model').TodoSchema
 const Todo = mongoose.model('todos', TodoSchema)
 const jwt = require('jwt-simple')
 
-const todo = new Service("TODO")
+const TEMPLATES_PATH = './src/app_api/templates/'
 
-const landingMenu = todo.addMenu('./src/app_api/templates/todoLanding.pug')
-landingMenu.header("MENU")
-
-const viewMenu = todo.addMenu('./src/app_api/templates/todoView.pug')
-viewMenu.header("VIEW")
-
-const doneMenu = todo.addMenu('./src/app_api/templates/todoDone.pug')
-doneMenu.header("DONE")
-
-const todoForm = todo.addForm('./src/app_api/templates/todoForm.pug')
-
-const descForm = todo.addForm('./src/app_api/templates/todoDescriptionForm.pug')
-descForm.header("DESCRIPTION")
-
-const dateForm = todo.addForm('./src/app_api/templates/todoDuedateForm.pug')
-dateForm.header("DUE DATE")
+const templates = {
+    LANDING_MENU : `${TEMPLATES_PATH}todoLanding.pug`,
+    VIEW_MENU : `${TEMPLATES_PATH}todoView.pug`,
+    DONE_MENU : `${TEMPLATES_PATH}todoDone.pug`,
+    TODO_FORM : `${TEMPLATES_PATH}todoForm.pug`,
+    DESC_FORM : `${TEMPLATES_PATH}todoDescriptionForm.pug`,
+    DATE_FORM : `${TEMPLATES_PATH}todoDuedateForm.pug`
+}
 
 /*
  * Middleware to grab user
@@ -50,23 +45,23 @@ function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-const landingMenuData = async function(user) {
+const landingMenuData = async function (user) {
     return new Promise((resolve, reject) => {
         const result = {
             doneCount: 0,
             todoCount: 0,
             todos: [],
         }
-        Todo.countDocuments({ user: user, status: 'done' }).then(function(count) {
+        Todo.countDocuments({ user: user, status: 'done' }).then(function (count) {
             result.doneCount = count
             return Todo.countDocuments({ user: user, status: 'todo' })
-        }).then(function(count) {
+        }).then(function (count) {
             result.todoCount = count
             return Todo.find({ user: user, status: 'todo' })
-        }).then(function(todos) {
+        }).then(function (todos) {
             result.todos = todos
             resolve(result)
-        }).catch(function(error) {
+        }).catch(function (error) {
             reject(error)
         })
     })
@@ -77,89 +72,92 @@ const landingMenuData = async function(user) {
  */
 // Landing menu
 api.get('/', getUser, async function (req, res) {
-    landingMenu.data = await landingMenuData(req.user)
-    logger.info(landingMenu.render())
-
-    res.json(landingMenu.render())
+    const data = await landingMenuData(req.user)
+    let rootTag = loadTemplate(templates.LANDING_MENU, data)
+    let response = Response.fromTag(rootTag)
+    res.json(response.toJSON())
 })
 
 // Todo view menu
 api.get('/view/:id', getUser, function (req, res) {
     Todo.findOne({ _id: ObjectId(req.params.id) }).then(function (todo) {
-       // viewMenu.data = todo
-        viewMenu.data = todo
-        logger.info(viewMenu.render())
-
-        res.json(viewMenu.render())
+        // viewMenu.data = todo
+        let rootTag = loadTemplate(templates.VIEW_MENU, todo)
+        let response = Response.fromTag(rootTag)
+        res.json(response.toJSON())
     })
 })
 
 api.get('/todoListdone', getUser, function (req, res) {
-    Todo.find({ status: 'done', user: req.user }).then(async function(todos) {
+    Todo.find({ status: 'done', user: req.user }).then(async function (todos) {
         if (todos.length > 0) {
-            doneMenu.data.todos = todos
-            logger.info(doneMenu.render())
 
-            res.json(doneMenu.render())
+            const data = {todos : todos}
+            let rootTag = loadTemplate(templates.DONE_MENU, data)
+            let response = Response.fromTag(rootTag)
+            res.json(response.toJSON())
+
         } else {
-            landingMenu.data = await landingMenuData(req.user)
-            landingMenu.data.preBody = "No tasks in done status"
-            logger.info(landingMenu.render())
-
-            res.json(landingMenu.render())         
+            const data = await landingMenuData(req.user)
+            data.preBody = "No tasks in done status"
+            let rootTag = loadTemplate(templates.LANDING_MENU, data)
+            let response = Response.fromTag(rootTag)
+            res.json(response.toJSON())
         }
     })
 })
 
 api.get('/form/new', getUser, function (req, res) {
-    logger.info(todoForm.render())
-    res.json(todoForm.render())
+    let rootTag = loadTemplate(templates.TODO_FORM)
+    let response = Response.fromTag(rootTag)
+    res.json(response.toJSON())
 })
 
 api.get('/form/desc', getUser, function (req, res) {
-    logger.info(descForm.render())
-
-    res.json(descForm.render())
+    let rootTag = loadTemplate(templates.DESC_FORM)
+    let response = Response.fromTag(rootTag)
+    res.json(response.toJSON())
 })
 
 api.put('/todoSetDuedate/:id', getUser, function (req, res) {
     Todo.findOneAndUpdate({ _id: ObjectId(req.params.id) },
         { $set: { dueDate: req.body.dueDate } },
-        { new: true }).then(async function(todo) {
-        landingMenu.data = await landingMenuData(req.user)
-        logger.info(landingMenu.render())
-
-        res.json(landingMenu.render())
-    })
+        { new: true }).then(async function (todo) {
+            const data = await landingMenuData(req.user)
+            let rootTag = loadTemplate(templates.LANDING_MENU, data)
+            let response = Response.fromTag(rootTag)
+            res.json(response.toJSON())
+        })
 })
 
 api.put('/todoDone/:id', getUser, function (req, res) {
     Todo.findOneAndUpdate({ _id: ObjectId(req.params.id) },
         { $set: { status: 'done' } },
-        { new: true }).then(async function(todo) {
-        landingMenu.data = await landingMenuData(req.user)
-        logger.info(landingMenu.render())
-
-        res.json(landingMenu.render())
-    })
+        { new: true }).then(async function (todo) {
+            const data = await landingMenuData(req.user)
+            let rootTag = loadTemplate(templates.LANDING_MENU, data)
+            let response = Response.fromTag(rootTag)
+            res.json(response.toJSON())
+        })
 })
 
 api.put('/todoTodo/:id', getUser, function (req, res) {
     Todo.findOneAndUpdate({ _id: ObjectId(req.params.id) },
         { $set: { status: 'todo' } },
-        { new: true }).then(async function(todo) {
-        landingMenu.data = await landingMenuData(req.user)
-        logger.info(landingMenu.render())
-
-        res.json(landingMenu.render())
-    })
+        { new: true }).then(async function (todo) {
+            const data = await landingMenuData(req.user)
+            let rootTag = loadTemplate(templates.LANDING_MENU, data)
+            let response = Response.fromTag(rootTag)
+            res.json(response.toJSON())
+        })
 })
 
 api.delete('/:id', getUser, function (req, res) {
-    Todo.deleteOne({ _id: ObjectId(req.params.id) }).then(async function(todo) {
-        landingMenu.data = await landingMenuData(req.user)
-        logger.info(landingMenu.render())
-        res.json(landingMenu.render())
+    Todo.deleteOne({ _id: ObjectId(req.params.id) }).then(async function (todo) {
+        const data = await landingMenuData(req.user)
+        let rootTag = loadTemplate(templates.LANDING_MENU, data)
+        let response = Response.fromTag(rootTag)
+        res.json(response.toJSON())
     })
 })
 
@@ -170,10 +168,11 @@ api.post('/todoAdd', getUser, function (req, res) {
     todo.taskDescription = capitalize(req.body.description)
     todo.dueDate = req.body.dueDate
     todo.status = 'todo'
-    todo.save(function (err, todo) {
-        dateForm.data.todo = todo
-        logger.info(landingMenu.render())
-        res.json(landingMenu.render())
+    todo.save(async function (err, todo) {
+        const data = await landingMenuData(req.user)
+        let rootTag = loadTemplate(templates.LANDING_MENU, data)
+        let response = Response.fromTag(rootTag)
+        res.json(response.toJSON())
     })
 })
 
@@ -184,9 +183,10 @@ api.post('/todoAddDesc', getUser, function (req, res) {
     todo.taskDescription = capitalize(req.body.description)
     todo.status = 'todo'
     todo.save(function (err, todo) {
-        dateForm.data.todo = todo
-        logger.info(dateForm.render())
-        res.json(dateForm.render())
+        const data = {todo : todo}
+        let rootTag = loadTemplate(templates.DATE_FORM, data)
+        let response = Response.fromTag(rootTag)
+        res.json(response.toJSON())
     })
 })
 
