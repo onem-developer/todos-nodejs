@@ -24,8 +24,6 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride())
 
-
-
 if (mode === 'development') {
     app.use(errorHandler())
     app.use(morgan('dev'))
