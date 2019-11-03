@@ -38,7 +38,6 @@
     "method-override": "^3.0.0",
     "mongoose": "^5.7.7",
     "morgan": "^1.9.1",
-    "onem-nodejs-api": "^1.2.0",
     "onemsdk": "^0.10.0",
     "path": "^0.12.7"
   },

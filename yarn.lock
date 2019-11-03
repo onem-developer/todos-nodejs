@@ -1725,14 +1725,6 @@ once@^1.3.0:
   dependencies:
     wrappy "1"
 
-onem-nodejs-api@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/onem-nodejs-api/-/onem-nodejs-api-1.2.0.tgz#fa215b83a84e9e187dac9707c6bbfb8d5a1e9ac0"
-  integrity sha512-87LrimFNTuNyIfarbLdtPE2ojSQbJ2uB1rLInqDOEp2AHzL92dobGA8LoO7dzE+5xVQhqJ1MOriXqNOwOHSOtQ==
-  dependencies:
-    node-html-parser "^1.1.12"
-    pug "^2.0.3"
-
 onemsdk@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/onemsdk/-/onemsdk-0.10.0.tgz#1ab3c1fa55e7d2e8056b9f36da5809de24d2a74e"

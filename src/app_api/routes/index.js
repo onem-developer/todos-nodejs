@@ -163,6 +163,8 @@ api.delete('/:id', getUser, function (req, res) {
 
 api.post('/todoAdd', getUser, function (req, res) {
     logger.info("/todoAdd")
+    logger.info("body:")
+    logger.info(req.body)
     let todo = new Todo()
     todo.user = req.user
     todo.taskDescription = capitalize(req.body.description)
