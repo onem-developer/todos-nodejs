@@ -1,8 +1,4 @@
 form(action="/todoAdd", skip-confirmation=false, method="post")
-    section(name="hidden1")
-        header DUE DATE
-        p Provide a due date
-        input(type="hidden", value="1234")
     section(name="description")
         header DESCRIPTION
         p Provide a description for the task
@@ -13,7 +9,7 @@ form(action="/todoAdd", skip-confirmation=false, method="post")
         p Provide a due date
         input(type="date")
         footer Reply with due date
-    section(name="hidden2")
-        header DUE DATE
-        p Provide a due date
-        input(type="hidden", value="2345")
+    //- section(name="somethingelse")
+    //-     header SOMETHING ELSE
+    //-     p Provide a number
+    //-     input(type="hidden", value="hidden_value")
