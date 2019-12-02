@@ -4,8 +4,8 @@ form(action="/todoAdd", skip-confirmation, method="post")
         p Provide a description for the task
         input(type="text")
         footer Reply with description or BACK
-    section(name="number" default="0")
+    section(name="dueDate")
         header DUE DATE
-        p Provide a number
-        input(type="number" step="2")
+        p Provide a due date
+        input(type="date")
         footer Reply with due date
