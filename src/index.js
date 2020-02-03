@@ -16,6 +16,7 @@ const config = require('./app_api/common/config')
 const api = require('./app_api/routes/index.js')
 const mode = app.get('env').toLowerCase()
 
+
 let public_folder
 
 require('./app_api/models/db')
