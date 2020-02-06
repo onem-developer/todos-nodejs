@@ -1,0 +1,7 @@
+{
+  "name": "ONEm Todos",
+  "description": "Sample todo app using Node-JS, Express and ONEm Framework",
+  "repository": "https://github.com/onem-developer/todos-nodejs.git",
+  "logo": "https://www.onem.com/img/onem-logo.svg",
+  "keywords": ["node", "express", "static"]
+}

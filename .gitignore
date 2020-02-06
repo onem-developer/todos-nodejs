@@ -56,11 +56,9 @@ typings/
 
 # dotenv environment variables file
 .env
-environment
 
 # next.js build output
 .next
 
-# Docker secrets
-secrets/
+
 
